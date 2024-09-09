@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/default.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/decrypt-files.css') }}">
     <title>Decrypt</title>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
     <script src="{{url_for('static', filename='javascript/util.js')}}"></script>
     <script src="{{url_for('static', filename='javascript/aes_encryption.js')}}"></script>
     <script src="{{url_for('static', filename='javascript/rsa_encryption.js')}}"></script>
@@ -62,13 +66,23 @@
             return filesData;
         };
 
-        const downloadBinaryFile = (content, fileName) => {
+        const downloadZipFile = (content, fileName) => {
             const link = document.createElement("a");
-            const file = new Blob([content], { type: "application/octet-stream" });
-            link.href = URL.createObjectURL(file);
+            link.href = URL.createObjectURL(content);
             link.download = fileName;
             link.click();
             URL.revokeObjectURL(link.href);
+        };
+
+        const getCurrentDateTimeString = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
         };
 
         const decryptFiles = async () => {
@@ -79,12 +93,19 @@
             }
 
             try {
+                const zip = new JSZip();
                 const filesData = await importFiles(files);
+
                 for (const { fileName, data } of filesData) {
                     const decryptedData = await dbDecryptByte(data, rsaKeyPair.privateKey);
-                    downloadBinaryFile(decryptedData, `decrypted_${fileName}`);
+                    zip.file(`decrypted_${fileName}`, decryptedData);
                 }
+
+                const content = await zip.generateAsync({ type: "blob" });
+                const dateTimeString = getCurrentDateTimeString();
+                downloadZipFile(content, `decrypted_${dateTimeString}.zip`);
             } catch (err) {
+                console.error(err);
                 alert('Falha na descriptografia.');
             }
         };
