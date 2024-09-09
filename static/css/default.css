@@ -1,0 +1,65 @@
+* {
+  border: none;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:root {
+  --orange: #f8ad15;
+  --white: #fff;
+  --black: #000;
+  --dark-grey: #313131;
+}
+
+@font-face {
+  font-family: "ITCFThin";
+  src: url("../../static/font/ITCFranklinGothicStd-BkCp.otf") format("opentype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ITCF";
+  src: url("../../static/font/ITCFranklinGothicStd-DmCp.otf") format("opentype");
+  font-style: normal;
+}
+
+.container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 26px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+h1 {
+  font-weight: 600;
+  color: var(--white);
+  font-family: "ITCF", sans-serif;
+  text-transform: uppercase;
+  font-size: 32px;
+  margin: 0 auto;
+}
+
+p {
+  font-family: "ITCFThin", sans-serif;
+  color: var(--white);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
