@@ -20,5 +20,9 @@ def generate_keys():
     return render_template('generate-keys.html')
 
 
+def main():
+    context = ('static/fullchain.pem', 'static/privkey.pem')
+    app.run(host='0.0.0.0', ssl_context=context, port=9443)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    main()
