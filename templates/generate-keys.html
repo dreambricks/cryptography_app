@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/default.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/generate-keys.css') }}">
     <title>Gerar chaves</title>
     <script src="{{url_for('static', filename='javascript/util.js')}}"></script>
     <script src="{{url_for('static', filename='javascript/aes_encryption.js')}}"></script>
@@ -11,69 +12,10 @@
     <script src="{{url_for('static', filename='javascript/db_encryption.js')}}"></script>
     <script src="{{url_for('static', filename='javascript/generate-keys.js')}}"></script>
 
-
-    <style>
-        .background {
-            background-color: #00CCFF;
-        }
-
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            padding-top: 36px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .logo {
-            padding-left: 57px;
-        }
-
-        .experience {
-            margin-top: auto;
-            width: 100%;
-            padding: 36px 37px 46px;
-            box-sizing: border-box;
-            text-align: center;
-            color: white;
-        }
-
-        .experience h1 {
-            max-width: 300px;
-        }
-
-        .experience p {
-            font-size: 24px;
-            margin-top: 28px;
-            margin-bottom: 43px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-
-    </style>
 </head>
 <body>
 <div class="container background">
     <div class="overlay">
-        <div class="logo">
-            <logo-component></logo-component>
-        </div>
 
         <div class="experience">
             <h1 class="uppercase">Gerador de Chaves</h1>

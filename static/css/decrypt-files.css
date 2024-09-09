@@ -17,23 +17,17 @@
 }
 
 .experience {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-direction: column;
     margin-top: auto;
-    width: 100%;
     padding: 36px 37px 46px;
-    box-sizing: border-box;
     text-align: center;
     color: white;
 }
 
-.experience h1 {
-    max-width: 300px;
-}
-
-.experience p {
-    font-size: 24px;
-    margin-top: 28px;
-    margin-bottom: 43px;
-}
 
 button {
     background-color: #007bff;

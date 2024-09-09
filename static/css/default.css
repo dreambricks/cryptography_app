@@ -54,6 +54,16 @@ h1 {
   margin: 0 auto;
 }
 
+h2 {
+  font-family: "ITCF", sans-serif;
+  text-transform: uppercase;
+}
+
+h3 {
+  font-family: "ITCF", sans-serif;
+  text-transform: uppercase;
+}
+
 p {
   font-family: "ITCFThin", sans-serif;
   color: var(--white);

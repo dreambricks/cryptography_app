@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/default.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/decrypt-files.css') }}">
+    <title>Decrypt</title>
+    <script src="{{url_for('static', filename='javascript/util.js')}}"></script>
+    <script src="{{url_for('static', filename='javascript/aes_encryption.js')}}"></script>
+    <script src="{{url_for('static', filename='javascript/rsa_encryption.js')}}"></script>
+    <script src="{{url_for('static', filename='javascript/db_encryption.js')}}"></script>
+    <script src="{{url_for('static', filename='javascript/generate-keys.js')}}"></script>
+
+    <script>
+        rsaKeyPair = {
+            publicKey: "",
+            privateKey: "",
+        };
+        inputData = null;
+
+        const setInputData = (data) => {
+            inputData = data;
+        };
+
+        const updateRsaKeyPair = () => {
+            const privateKeyFile = document.getElementById("rsaPrivateKey").files[0];
+            if (privateKeyFile) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    rsaKeyPair.privateKey = event.target.result;
+                    console.log("Chave privada atualizada:", rsaKeyPair.privateKey);
+                };
+                reader.readAsText(privateKeyFile);
+            }
+        };
+
+        const readBinaryFile = async (file) => {
+            if (!file) {
+                return;
+            }
+
+            if (file.size > 1024 * 1024 * 50) {
+                return alert("file size is too big");
+            }
+
+            var binData = null;
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                var data = reader.result;
+                setInputData(data);
+                binData = data;
+            };
+            await reader.readAsArrayBuffer(file);
+            return inputData;
+        };
+
+        const importFile = async (file) => {
+            var data = await readBinaryFile(file);
+        };
+
+        const downloadBinaryFile = (content, fileName) => {
+            const link = document.createElement("a");
+            const file = new Blob([content], { type: "application/octet-stream" });
+            link.href = URL.createObjectURL(file);
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        };
+
+        const decryptFile = async () => {
+            updateRsaKeyPair();
+            try {
+                var decryptedData = await dbDecryptByte(inputData, rsaKeyPair.privateKey);
+                downloadBinaryFile(decryptedData, "decrypted_file.dec");
+            } catch (err) {
+                alert('Decryption failed.');
+            }
+        };
+    </script>
+
+</head>
+<body>
+
+<div class="container background" id="demo">
+    <div class="overlay">
+        <div class="experience">
+            <h1>Descriptografia</h1>
+
+            <h3>Colque a chave privada</h3>
+            <input
+                type="file"
+                id="rsaPrivateKey"
+                accept=".pem"
+                placeholder="RSA Private Key"
+                onChange="updateRsaKeyPair()"
+            />
+
+            <h3>Importe o arquivo para descriptografar</h3>
+            <input
+                id="dropzone-decrypt-file"
+                type="file"
+                onChange="importFile(this.files[0])"
+            />
+
+            <button onclick='decryptFile()'>Descriptografar</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
