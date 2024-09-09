@@ -40,23 +40,26 @@
                 return;
             }
 
-            if (file.size > 1024 * 1024 * 50) {
-                return alert("file size is too big");
+            if (file.size > 1024 * 1024 * 50) {  // Limite de tamanho do arquivo
+                return alert("O tamanho do arquivo é muito grande");
             }
 
-            var binData = null;
             const reader = new FileReader();
-            reader.onload = async function (e) {
-                var data = reader.result;
-                setInputData(data);
-                binData = data;
-            };
-            await reader.readAsArrayBuffer(file);
-            return inputData;
+            return new Promise((resolve) => {
+                reader.onload = function (e) {
+                    resolve(reader.result);
+                };
+                reader.readAsArrayBuffer(file);
+            });
         };
 
-        const importFile = async (file) => {
-            var data = await readBinaryFile(file);
+        const importFiles = async (files) => {
+            const filesData = [];
+            for (const file of files) {
+                const data = await readBinaryFile(file);
+                filesData.push({ fileName: file.name, data });
+            }
+            return filesData;
         };
 
         const downloadBinaryFile = (content, fileName) => {
@@ -68,13 +71,21 @@
             URL.revokeObjectURL(link.href);
         };
 
-        const decryptFile = async () => {
+        const decryptFiles = async () => {
             updateRsaKeyPair();
+            const files = document.getElementById("dropzone-decrypt-files").files;
+            if (!files.length) {
+                return alert("Selecione pelo menos um arquivo para descriptografar.");
+            }
+
             try {
-                var decryptedData = await dbDecryptByte(inputData, rsaKeyPair.privateKey);
-                downloadBinaryFile(decryptedData, "decrypted_file.dec");
+                const filesData = await importFiles(files);
+                for (const { fileName, data } of filesData) {
+                    const decryptedData = await dbDecryptByte(data, rsaKeyPair.privateKey);
+                    downloadBinaryFile(decryptedData, `decrypted_${fileName}`);
+                }
             } catch (err) {
-                alert('Decryption failed.');
+                alert('Falha na descriptografia.');
             }
         };
     </script>
@@ -87,23 +98,24 @@
         <div class="experience">
             <h1>Descriptografia</h1>
 
-            <h3>Colque a chave privada</h3>
+            <h3>Coloque a chave privada</h3>
             <input
-                type="file"
-                id="rsaPrivateKey"
-                accept=".pem"
-                placeholder="RSA Private Key"
-                onChange="updateRsaKeyPair()"
+                    type="file"
+                    id="rsaPrivateKey"
+                    accept=".pem"
+                    placeholder="RSA Private Key"
+                    onChange="updateRsaKeyPair()"
             />
 
-            <h3>Importe o arquivo para descriptografar</h3>
+            <h3>Importe os arquivos para descriptografar</h3>
             <input
-                id="dropzone-decrypt-file"
-                type="file"
-                onChange="importFile(this.files[0])"
+                    id="dropzone-decrypt-files"
+                    type="file"
+                    multiple
+                    onChange="importFiles(this.files)"
             />
 
-            <button onclick='decryptFile()'>Descriptografar</button>
+            <button onclick='decryptFiles()'>Descriptografar Arquivos</button>
         </div>
     </div>
 </div>
